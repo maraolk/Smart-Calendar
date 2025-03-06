@@ -25,14 +25,14 @@ create table public.events(
     id bigserial primary key,
     title varchar(255) not null,
     description varchar,
-    adress varchar,
+    address varchar,
     latitude decimal(10, 8) not null,
     longitude decimal(10, 8) not null,
     start_time timestamp not null,
     end_time timestamp not null,
-    organizer_id bigint not null references public.organizers(id),
+    organizer_id bigint not null references public.users(id),
     status varchar not null default('active'),
-    average_raiting decimal(3, 2) default(0.00)
+    average_rating decimal(3, 2) default(0.00)
 )
 
 --таблица с данными о регистрациях пользователей на конкретное мероприятие
@@ -50,7 +50,7 @@ create table public.reviews
     id bigserial primary key,
     user_id bigint not null references public.users(id),
     event_id bigint not null references public.events(id),
-    raiting evaluation decimal(10, 2)
+    rating evaluation decimal(10, 2)
 )
 
 --таблица с данными о напоминаниях (на какое событие, какому пользователю, время отправки напоминания и статус отправки (было отправлено или нет)
@@ -63,6 +63,13 @@ create table public.reminders
     is_sent boolean default false
 )
 
+create table public.calendars
+(
+    id bigserial primary key,
+    calendar_name varchar(255) not null unique,
+    available_to_user_id not null references public.users(id),
+    event_id not null references public.events(id)
+)
 --позднее будет создана таблица для календарей
 --она будет создана после того, как мы поймем как интегрироваться с внешними серверами,
 --такими как гугл календарь, яндекс календарь и прочее
