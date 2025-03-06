@@ -24,7 +24,11 @@ create table public.events(
     status varchar not null default('active'),
     average_rating decimal(3, 2) default(0.00)
 )
-
+create table public.event_to_calendar(
+    id bigserial primary key,
+    event_id bigint not null references public.events(id)
+    calendar_id bigint not null references public.calendars(id)
+)
 --таблица с данными о регистрациях пользователей на конкретное мероприятие
 create table public.registrations
 (
@@ -47,18 +51,19 @@ create table public.reviews
 create table public.reminders
 (
     id bigserial primary key,
-    event_id bigint not null references public.events(id),
-    user_id bigint not null references public.users(id),
-    reminder_time timestamp not null,
+    registration_id bigint not null references public.registrations(id)
     is_sent boolean default false
 )
-
+create table public.user_to_calendar(
+    id bigserial primary key,
+    calendar_id bigint not null references public.calendars(id),
+    user_id bigint not null references public.users(id),
+    access_type not null
+)
 create table public.calendars
 (
     id bigserial primary key,
     calendar_name varchar(255) not null unique,
-    available_to_user_id not null references public.users(id), --пока тут непонятно
-    event_id not null references public.events(id) --и тут тоже
 )
 --позднее будет создана таблица для календарей
 --она будет создана после того, как мы поймем как интегрироваться с внешними серверами,
