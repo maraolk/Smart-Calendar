@@ -9,16 +9,6 @@ create table public.users
     tg varchar(255) unique,
 )
 
---таблица с данными организаторов мероприятий (под организатором понимается какая-то компания или отдельный человек)
---в ней хранятся имя организации, контактный телефон, почта
-create table public.organizers
-(
-    id bigserial primary key,
-    organization_name varchar(255) not null,
-    contact_phone varchar(12) unique,
-    email varchar(255) unique,
-)
-
 --таблица с описанием мероприятий (название, краткое описание мероприятия, его адрес проведения, координаты,
 --время начала и конца, кто организатор, активно ли мероприятие (то есть можно ли на него зарегистрироваться) и средний рейтинг от пользователей
 create table public.events(
@@ -67,8 +57,8 @@ create table public.calendars
 (
     id bigserial primary key,
     calendar_name varchar(255) not null unique,
-    available_to_user_id not null references public.users(id),
-    event_id not null references public.events(id)
+    available_to_user_id not null references public.users(id), --пока тут непонятно
+    event_id not null references public.events(id) --и тут тоже
 )
 --позднее будет создана таблица для календарей
 --она будет создана после того, как мы поймем как интегрироваться с внешними серверами,
