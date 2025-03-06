@@ -1,31 +1,30 @@
 package demo.calendar.controller
 
-import demo.calendar.dto.CalendarRequest
-import demo.calendar.dto.Reaction
+import demo.calendar.dto.*
 import demo.calendar.service.CalendarService
 import org.springframework.web.bind.annotation.*
 import org.yaml.snakeyaml.events.Event
 
 @RestController
-@RequestMapping("/api/calendar")
+@RequestMapping("/api/v1/calendar")
 class CalendarController(
     val calendarService: CalendarService
 ) {
-    @PostMapping("/newCalendar")
-    fun newCalendar(@RequestParam("token") token: String, @RequestBody request: CalendarRequest) = calendarService.newCalendar(token, request)
+    @PostMapping("/createCalendar")
+    fun createCalendar(@RequestParam("token") token: String, @RequestBody request: CreateCalendarRequest) = calendarService.createCalendar(token, request)
 
     @PutMapping("/manageUsers")
-    fun manageUsers(@RequestParam("token") token : String, @RequestParam("calendarId") id: Long, @RequestParam("tg") user: String, @RequestParam("operation") work: String) = calendarService.addUser(token, id, user, work)
+    fun manageUsers(@RequestParam("token") token : String, @RequestBody request: ManageUsersRequest) = calendarService.manageUser(token, request)
 
-    @PutMapping("/addEvent")
-    fun addEvent(@RequestParam("token") token : String, @RequestParam("calendarId") id: Long, @RequestBody event: Event, @RequestParam("operation") work: String) = calendarService.addEvent(token, id, event, work)
+    @PutMapping("/manageCalendar")
+    fun manageCalendar(@RequestParam("token") token : String, @RequestBody request: ManageCalendarRequest) = calendarService.manageCalendar(token, request)
 
-    @PutMapping("/updateEvent")
-    fun updateEvent(@RequestParam("token") token : String, @RequestParam("calendarId") id: Long, @RequestParam("eventId") event: Long, @RequestBody newEvent: Event, @RequestParam("operation") work: String) = calendarService.updateEvent(token, id, event, newEvent, work)
+    @PostMapping("/createEvent")
+    fun createEvent(@RequestParam("token") token : String, @RequestBody request: CreateEventRequest) = calendarService.createEvent(token, request)
 
-    @PutMapping("/deleteEvent")
-    fun delEvent(@RequestParam("token") token : String, @RequestParam("calendarId") id: Long, @RequestParam("eventId") event: Long, @RequestParam("operation") work: String) = calendarService.delEvent(token, id, event, work)
+    @PutMapping("/manageEvent")
+    fun manageEvent(@RequestParam("token") token: String, @RequestBody request: ManageEventRequest) = calendarService.manageEvent(token, request)
 
     @PostMapping("/reactEvent")
-    fun React(@RequestParam("token") token : String, @RequestParam("calendarId") id: Long, @RequestParam("eventId") event: Long, @RequestBody reaction: Reaction) = calendarService.reactEvent(token, id, event, reaction)
+    fun react(@RequestParam("token") token : String, @RequestBody request: ReactEventRequest) = calendarService.reactEvent(token, request)
 }

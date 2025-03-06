@@ -1,6 +1,5 @@
 package demo.calendar.dto
 
-data class CalendarRequest(
+data class Event(
     val todo: String
-) {
-}
+)

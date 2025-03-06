@@ -6,16 +6,16 @@ import demo.calendar.dto.SingUpRequest
 import org.springframework.web.bind.annotation.*
 
 @RestController
-@RequestMapping("/api/user")
+@RequestMapping("/api/v1/user")
 class UserController(
     val userService: UserService
 ) {
     @PostMapping("/register")
-    fun regUser(@RequestBody request: SingUpRequest) = userService.registerUser(request)
+    fun registerUser(@RequestBody request: SingUpRequest) = userService.registerUser(request)
 
     @PostMapping("/authorize")
-    fun authUser(@RequestBody request: AuthorizeRequest) = userService.authUser(request)
+    fun authorizeUser(@RequestBody request: AuthorizeRequest) = userService.authorizeUser(request)
 
-    @PutMapping("/update")
-    fun updUser(@RequestBody request: SingUpRequest, @RequestParam("token") token: String) = userService.updateUser(request, token)
+    @PutMapping("/manage")
+    fun manageUser(@RequestParam("token") token: String, @RequestBody request: SingUpRequest) = userService.manageUser(token, request)
 }
