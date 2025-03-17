@@ -5,5 +5,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 import java.util.*
 
 interface CalendarRepository: JpaRepository<CalendarEntity, Long> {
-    fun findByName(name: String): CalendarEntity?
+    fun findByCalendarName(calendarName: String): CalendarEntity?
 }
