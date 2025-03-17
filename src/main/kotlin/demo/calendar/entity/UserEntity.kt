@@ -7,7 +7,7 @@ import jakarta.persistence.*
 //по номеру телефона (используя свою телефонную книгу) или по тг(так как в последнее время эта соцсеть популярней, чем почта),
 //имя пользователя тоже часто совпадает с тг, поэтому проще искать по нему
 @Entity
-@Table(name = "users", indexes=[Index(name = "idx_user_phone", columnList = "phone"),
+@Table(name = "users", indexes=[Index(name = "idx_users_phone", columnList = "phone"),
     Index(name="idx_user_tg", columnList = "tg")])
 data class UserEntity(
     @Id
