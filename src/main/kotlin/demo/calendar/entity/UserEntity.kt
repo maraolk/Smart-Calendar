@@ -8,7 +8,7 @@ import jakarta.persistence.*
 //имя пользователя тоже часто совпадает с тг, поэтому проще искать по нему
 @Entity
 @Table(name = "users", indexes=[Index(name = "idx_users_phone", columnList = "phone"),
-    Index(name="idx_user_tg", columnList = "tg")])
+    Index(name="idx_users_tg", columnList = "tg")])
 data class UserEntity(
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
