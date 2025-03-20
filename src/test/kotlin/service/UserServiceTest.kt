@@ -1,6 +1,7 @@
 package service
 
 import demo.calendar.dto.SingUpRequest
+import demo.calendar.entity.UserEntity
 import demo.calendar.exception.UserAlreadyRegisteredException
 import demo.calendar.repository.UserRepository
 import demo.calendar.service.UserService
@@ -24,7 +25,12 @@ class UserServiceTest {
             email = "AustrianPainter@nazi.de",
             tg = "@amTheRealHitler1337",
         )
-        every { userRepository.findByTg(newUser.tg) } returns null
+        every { userRepository.findByTg(newUser.tg) } returns UserEntity(
+            username = newUser.userName,
+            phone = newUser.phone,
+            email = newUser.email,
+            tg = newUser.tg
+        )
 
         val exception = assertThrows(UserAlreadyRegisteredException::class.java) {
             userService.registerUser(newUser)
