@@ -26,6 +26,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-web")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.springframework.boot:spring-boot-starter-actuator")
+	implementation("org.liquibase:liquibase-core")
 	runtimeOnly("org.postgresql:postgresql")
 	testImplementation(kotlin("test"))
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
@@ -34,6 +35,7 @@ dependencies {
 	testImplementation("io.mockk:mockk:1.13.16")
 	testImplementation("com.ninja-squad:springmockk:4.0.2")
 }
+
 
 kotlin {
 	compilerOptions {
