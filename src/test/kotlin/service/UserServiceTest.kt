@@ -18,7 +18,7 @@ class UserServiceTest {
     private val userService = UserService(userRepository)
 
     @Test
-    fun `Регисграция пользователя, пользователь уже зарегестрирован`() {
+    fun `Регистрация пользователя, пользователь уже зарегистрирован`() {
         val newUser = SingUpRequest(
             userName = "Адольф",
             phone = "1488",
