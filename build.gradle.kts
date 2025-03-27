@@ -33,7 +33,6 @@ dependencies {
 	testImplementation("io.kotest:kotest-assertions-core:5.7.2")
 	testImplementation("io.mockk:mockk:1.13.16")
 	testImplementation("com.ninja-squad:springmockk:4.0.2")
-
 }
 
 
