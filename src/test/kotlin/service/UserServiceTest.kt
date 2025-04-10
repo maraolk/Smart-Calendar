@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
 import org.junit.jupiter.api.Test
+import io.kotest.matchers.shouldBe
+import demo.calendar.dto.UserResponse
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -37,5 +39,15 @@ class UserServiceTest {
         shouldThrow<UserAlreadyRegisteredException> {
             userController.registerUser(newUser)
         }
+    }
+    @Test
+    fun `Регистрация пользователя, когда пользователь правильно регистрируется`(){
+        val newRequest = SingUpRequest(
+            userName = "Ostin",
+            phone = "891234567829",
+            email = "PUPUPUpupunia@popatarakana",
+            tg = "@SIGMABOY",)
+        val response = userController.registerUser(newRequest)
+        response shouldBe UserResponse(userName=newRequest.userName, phone=newRequest.phone, email=newRequest.email, tg=newRequest.tg)
     }
 }
