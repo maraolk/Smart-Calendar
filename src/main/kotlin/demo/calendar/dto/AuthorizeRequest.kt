@@ -1,6 +1,7 @@
 package demo.calendar.dto
 
 data class AuthorizeRequest(
-    val todo: String
+    val userName: String,
+    val tg: String
 ) {
 }
