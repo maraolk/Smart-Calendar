@@ -1,20 +1,17 @@
 package service
 
-import com.ninjasquad.springmockk.MockkBean
 import demo.calendar.controller.UserController
 import demo.calendar.dto.SingUpRequest
-import demo.calendar.dto.UserResponse
-import demo.calendar.entity.UserEntity
 import demo.calendar.exception.UserAlreadyRegisteredException
 import demo.calendar.repository.UserRepository
 import io.kotest.assertions.throwables.shouldThrow
-import io.kotest.matchers.shouldBe
-import io.mockk.every
 import org.junit.jupiter.api.AfterEach
-import org.junit.jupiter.api.Test
 import org.springframework.beans.factory.annotation.Autowired
 import org.springframework.boot.test.context.SpringBootTest
 import org.springframework.test.context.ActiveProfiles
+import org.junit.jupiter.api.Test
+import io.kotest.matchers.shouldBe
+import demo.calendar.dto.UserResponse
 
 @ActiveProfiles("test")
 @SpringBootTest
@@ -43,7 +40,6 @@ class UserServiceTest {
             userController.registerUser(newUser)
         }
     }
-
     @Test
     fun `Регистрация пользователя, когда пользователь правильно регистрируется`(){
         val newRequest = SingUpRequest(
