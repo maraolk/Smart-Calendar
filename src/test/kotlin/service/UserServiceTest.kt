@@ -5,7 +5,9 @@ import demo.calendar.controller.UserController
 import demo.calendar.dto.SingUpRequest
 import demo.calendar.dto.UserResponse
 import demo.calendar.entity.UserEntity
+import demo.calendar.exception.UserAlreadyRegisteredException
 import demo.calendar.repository.UserRepository
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
 import io.mockk.every
 import org.junit.jupiter.api.AfterEach
@@ -26,6 +28,20 @@ class UserServiceTest {
     @AfterEach
     fun cleanup() {
         userRepository.deleteAll()
+    }
+
+    @Test
+    fun `Регистрация пользователя, пользователь уже зарегистрирован`() {
+        val newUser = SingUpRequest(
+            userName = "Адольф",
+            phone = "1488",
+            email = "AustrianPainter@nazi.de",
+            tg = "@amTheRealHitler1337",
+        )
+        userController.registerUser(newUser)
+        shouldThrow<UserAlreadyRegisteredException> {
+            userController.registerUser(newUser)
+        }
     }
 
     @Test
