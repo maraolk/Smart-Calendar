@@ -1,6 +1,7 @@
 package demo.calendar.controller
 
 import demo.calendar.dto.AuthorizeRequest
+import demo.calendar.dto.ManageRequest
 import demo.calendar.service.UserService
 import demo.calendar.dto.SingUpRequest
 import org.springframework.web.bind.annotation.*
@@ -17,5 +18,5 @@ class UserController(
     fun authorizeUser(@RequestBody request: AuthorizeRequest) = userService.authorizeUser(request)
 
     @PutMapping("/manage")
-    fun manageUser(@RequestParam("token") token: String, @RequestBody request: SingUpRequest) = userService.manageUser(token, request)
+    fun manageUser(@RequestParam("token") token: String, @RequestBody request: ManageRequest) = userService.manageUser(token, request)
 }
