@@ -7,6 +7,7 @@ create table public.users
     phone varchar(12) unique,
     email varchar(255) unique,
     tg varchar(255) not null unique,
+    password varchar not null
 )
 
 --таблица с описанием мероприятий (название, краткое описание мероприятия, его адрес проведения, координаты,
@@ -68,3 +69,12 @@ create table public.calendars
 --позднее будет создана таблица для календарей
 --она будет создана после того, как мы поймем как интегрироваться с внешними серверами,
 --такими как гугл календарь, яндекс календарь и прочее
+
+create table public.tokens
+(
+    id bigserial primary key,
+    token_value varchar not null unique,
+    user_id not null references public.users(id),
+    revoked boolean default false
+
+)
