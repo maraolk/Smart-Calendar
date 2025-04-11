@@ -5,6 +5,7 @@ import demo.calendar.dto.SingUpRequest
 import demo.calendar.dto.UserResponse
 import demo.calendar.entity.TokenEntity
 import demo.calendar.entity.UserEntity
+import demo.calendar.exception.NotValidTokenException
 import demo.calendar.exception.UserAlreadyRegisteredException
 import demo.calendar.exception.UserNotFoundException
 import demo.calendar.exception.WrongPasswordException
@@ -44,5 +45,25 @@ class UserService(
         if (user.username != request.userName) throw WrongPasswordException("User with such username has different password")
         val token = createToken(user)
         return token.token_value
+    }
+    fun manageUser(token: String, password: String, request: SingUpRequest): UserResponse {
+        val user = tokenRepository.findByValue(token)?.user
+        if (user == null) throw NotValidTokenException("No user exists with such token")
+        if (password != user.password) throw WrongPasswordException("User with such token has different password")
+        userRepository.save(UserEntity(
+            id = user.id,
+            username = request.userName,
+            email = request.email,
+            phone = request.phone,
+            tg = request.tg,
+            password = request.password
+        ))
+        return UserResponse(
+            userName = request.userName,
+            email = request.email,
+            phone = request.phone,
+            tg = request.tg,
+            password = request.password
+        )
     }
 }
