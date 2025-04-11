@@ -18,5 +18,5 @@ class UserController(
     fun authorizeUser(@RequestBody request: AuthorizeRequest) = userService.authorizeUser(request)
 
     @PutMapping("/manage")
-    fun manageUser(@RequestParam("token") token: String, @RequestBody request: ManageRequest) = userService.manageUser(request)
+    fun manageUser(@RequestParam("token") token: String, @RequestBody request: ManageRequest) = userService.manageUser(token, request)
 }
