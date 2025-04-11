@@ -7,6 +7,7 @@ create table public.users
     phone varchar(12) unique,
     email varchar(255) unique,
     tg varchar(255) not null unique,
+    password varchar not null
 )
 
 --таблица с описанием мероприятий (название, краткое описание мероприятия, его адрес проведения, координаты,

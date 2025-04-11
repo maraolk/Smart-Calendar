@@ -24,6 +24,9 @@ data class UserEntity(
     val phone: String?,
 
     @Column(unique = true, nullable=false)
-    val tg: String
+    val tg: String,
+
+    @Column(nullable=false)
+    val password: String
 
 )

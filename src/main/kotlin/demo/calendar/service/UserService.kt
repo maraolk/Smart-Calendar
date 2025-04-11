@@ -1,15 +1,13 @@
 package demo.calendar.service
 
-import ch.qos.logback.core.subst.Token
 import demo.calendar.dto.AuthorizeRequest
 import demo.calendar.dto.SingUpRequest
-import demo.calendar.dto.User
 import demo.calendar.dto.UserResponse
 import demo.calendar.entity.TokenEntity
 import demo.calendar.entity.UserEntity
 import demo.calendar.exception.UserAlreadyRegisteredException
 import demo.calendar.exception.UserNotFoundException
-import demo.calendar.exception.WrongUserException
+import demo.calendar.exception.WrongPasswordException
 import demo.calendar.repository.TokenRepository
 import demo.calendar.repository.UserRepository
 import jakarta.transaction.Transactional
@@ -35,14 +33,15 @@ class UserService(
             username = request.userName,
             email = request.email,
             phone = request.phone,
-            tg = request.tg
+            tg = request.tg,
+            password = request.password
         ))
-        return UserResponse(userName = request.userName, email = request.email, phone = request.phone, tg = request.tg)
+        return UserResponse(userName = request.userName, email = request.email, phone = request.phone, tg = request.tg, password = request.password)
     }
     fun authorizeUser(request: AuthorizeRequest): String{
         val user = userRepository.findByTg(request.tg)
         if (user == null) throw UserNotFoundException("User with this tg not found")
-        if (user.username != request.userName) throw WrongUserException("User with such tg has different username")
+        if (user.username != request.userName) throw WrongPasswordException("User with such username has different password")
         val token = createToken(user)
         return token.token_value
     }

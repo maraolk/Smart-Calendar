@@ -34,6 +34,7 @@ class UserServiceTest {
             phone = "1488",
             email = "AustrianPainter@nazi.de",
             tg = "@amTheRealHitler1337",
+            password = "BombardiroCrocodillo",
         )
         userController.registerUser(newUser)
         shouldThrow<UserAlreadyRegisteredException> {
@@ -46,8 +47,9 @@ class UserServiceTest {
             userName = "Ostin",
             phone = "891234567829",
             email = "PUPUPUpupunia@popatarakana",
-            tg = "@SIGMABOY",)
+            tg = "@SIGMABOY",
+            password = "BOMBARDIROCROCODILLO",)
         val response = userController.registerUser(newRequest)
-        response shouldBe UserResponse(userName=newRequest.userName, phone=newRequest.phone, email=newRequest.email, tg=newRequest.tg)
+        response shouldBe UserResponse(userName=newRequest.userName, phone=newRequest.phone, email=newRequest.email, tg=newRequest.tg, password=newRequest.password)
     }
 }
