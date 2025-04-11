@@ -1,6 +1,7 @@
 package demo.calendar.service
 
 import demo.calendar.dto.AuthorizeRequest
+import demo.calendar.dto.ManageRequest
 import demo.calendar.dto.SingUpRequest
 import demo.calendar.dto.UserResponse
 import demo.calendar.entity.TokenEntity
@@ -46,10 +47,10 @@ class UserService(
         val token = createToken(user)
         return token.token_value
     }
-    fun manageUser(token: String, password: String, request: SingUpRequest): UserResponse {
+    fun manageUser(token: String, request: ManageRequest): UserResponse {
         val user = tokenRepository.findByValue(token)?.user
         if (user == null) throw NotValidTokenException("No user exists with such token")
-        if (password != user.password) throw WrongPasswordException("User with such token has different password")
+        if (request.oldPassword != user.password) throw WrongPasswordException("User with such token has different password")
         userRepository.save(UserEntity(
             id = user.id,
             username = request.userName,
