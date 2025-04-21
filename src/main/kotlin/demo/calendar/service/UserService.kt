@@ -43,7 +43,8 @@ class UserService(
     fun authorizeUser(request: AuthorizeRequest): String{
         val user = userRepository.findByTg(request.tg)
         if (user == null) throw UserNotFoundException("User with this tg not found")
-        if (user.username != request.userName) throw WrongPasswordException("User with such username has different password")
+        if (user.username != request.userName) throw UserNotFoundException("User with such tg has different username")
+        if (user.password != request.password) throw WrongPasswordException("User with such tg has different password")
         val token = createToken(user)
         return token.token_value
     }
