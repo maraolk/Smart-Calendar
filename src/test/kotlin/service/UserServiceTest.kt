@@ -12,9 +12,14 @@ import org.springframework.test.context.ActiveProfiles
 import org.junit.jupiter.api.Test
 import io.kotest.matchers.shouldBe
 import demo.calendar.dto.UserResponse
+import jakarta.transaction.Transactional
 
-@ActiveProfiles("test")
-@SpringBootTest
+@SpringBootTest(
+    properties = [
+        "spring.profiles.active=test"
+    ]
+)
+@Transactional
 class UserServiceTest {
     @Autowired
     lateinit var userRepository: UserRepository

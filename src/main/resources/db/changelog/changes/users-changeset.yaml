@@ -33,6 +33,11 @@ databaseChangeLog:
                   constraints:
                     nullable: false
                     unique: true
+              - column:
+                  name: password
+                  type: varchar
+                  constrains:
+                    nullable: false
         - createIndex:
             tableName: users
             indexName: idx_users_phone
