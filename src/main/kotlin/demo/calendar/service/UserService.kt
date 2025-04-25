@@ -21,45 +21,67 @@ class UserService(
     private val userRepository: UserRepository,
     private val tokenRepository: TokenRepository
 ) {
-    fun createToken(user: UserEntity) =
-        TokenEntity(
+    fun createToken(user: UserEntity): String {
+        val token = TokenEntity(
             token_value = UUID.randomUUID().toString(),
             user = user
         )
+        tokenRepository.save(token)
+        return token.token_value
+    }
+
+    fun tokenIsValid(token: TokenEntity) {
+        if (token.revoked) throw NotValidTokenException("User's token has been already revoked")
+    }
 
     @Transactional
     fun registerUser(request: SingUpRequest): UserResponse {
         val user = userRepository.findByTg(request.tg)
         if (user != null) throw UserAlreadyRegisteredException("User with this tg is already registered")
-        userRepository.save(UserEntity(
-            username = request.userName,
+        userRepository.save(
+            UserEntity(
+                username = request.userName,
+                email = request.email,
+                phone = request.phone,
+                tg = request.tg,
+                password = request.password
+            )
+        )
+        return UserResponse(
+            userName = request.userName,
             email = request.email,
             phone = request.phone,
             tg = request.tg,
             password = request.password
-        ))
-        return UserResponse(userName = request.userName, email = request.email, phone = request.phone, tg = request.tg, password = request.password)
+        )
     }
-    fun authorizeUser(request: AuthorizeRequest): String{
+
+    fun authorizeUser(request: AuthorizeRequest): String {
         val user = userRepository.findByTg(request.tg)
         if (user == null) throw UserNotFoundException("User with this tg not found")
         if (user.username != request.userName) throw UserNotFoundException("User with such tg has different username")
         if (user.password != request.password) throw WrongPasswordException("User with such tg has different password")
         val token = createToken(user)
-        return token.token_value
+        return token
     }
+
+    @Transactional
     fun manageUser(token: String, request: ManageRequest): UserResponse {
-        val user = tokenRepository.findByValue(token)?.user
+        val tEntity = tokenRepository.findByValue(token)
+        val user = tEntity?.user
         if (user == null) throw NotValidTokenException("No user exists with such token")
+        tokenIsValid(tEntity)
         if (request.oldPassword != user.password) throw WrongPasswordException("User with such token has different password")
-        userRepository.save(UserEntity(
-            id = user.id,
-            username = request.userName,
-            email = request.email,
-            phone = request.phone,
-            tg = request.tg,
-            password = request.password
-        ))
+        userRepository.save(
+            UserEntity(
+                id = user.id,
+                username = request.userName,
+                email = request.email,
+                phone = request.phone,
+                tg = request.tg,
+                password = request.password
+            )
+        )
         return UserResponse(
             userName = request.userName,
             email = request.email,
