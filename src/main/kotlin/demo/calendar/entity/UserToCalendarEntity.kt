@@ -16,4 +16,7 @@ data class UserToCalendarEntity(
     @ManyToMany(fetch = FetchType.EAGER)
     @JoinColumn(name = "id", nullable = false)
     val calendar: CalendarEntity,
+
+    @Column(nullable = false)
+    val access_type: String
 )
