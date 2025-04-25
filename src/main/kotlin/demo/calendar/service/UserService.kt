@@ -30,7 +30,8 @@ class UserService(
         return token.token_value
     }
 
-    fun tokenIsValid(token: TokenEntity) {
+    fun tokenIsValid(token: TokenEntity?) {
+        if (token == null) throw NotValidTokenException("No user exists with such token")
         if (token.revoked) throw NotValidTokenException("User's token has been already revoked")
     }
 
@@ -68,9 +69,8 @@ class UserService(
     @Transactional
     fun manageUser(token: String, request: ManageRequest): UserResponse {
         val tEntity = tokenRepository.findByValue(token)
-        val user = tEntity?.user
-        if (user == null) throw NotValidTokenException("No user exists with such token")
         tokenIsValid(tEntity)
+        val user = tEntity!!.user
         if (request.oldPassword != user.password) throw WrongPasswordException("User with such token has different password")
         userRepository.save(
             UserEntity(
@@ -89,5 +89,15 @@ class UserService(
             tg = request.tg,
             password = request.password
         )
+    }
+    fun logout(token: String) {
+        val tEntity = tokenRepository.findByValue(token)
+        tokenIsValid(tEntity)
+        tokenRepository.save(TokenEntity(
+            id = tEntity!!.id,
+            token_value = tEntity.token_value,
+            user = tEntity.user,
+            revoked = true
+        ))
     }
 }
