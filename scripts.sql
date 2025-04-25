@@ -21,14 +21,9 @@ create table public.events(
     longitude decimal(10, 8),
     start_time timestamp not null,
     end_time timestamp not null,
-    --organizer_id bigint not null references public.users(id),
+    organizer_id bigint not null references public.users(id),
     status varchar not null default('active'),
     average_rating decimal(3, 2) default(0.00)
-)
-create table public.event_to_calendar(
-    id bigserial primary key,
-    event_id bigint not null references public.events(id)
-    calendar_id bigint not null references public.calendars(id)
 )
 --таблица с данными о регистрациях пользователей на конкретное мероприятие
 create table public.registrations

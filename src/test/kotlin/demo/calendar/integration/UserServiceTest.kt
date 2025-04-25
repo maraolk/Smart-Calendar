@@ -1,6 +1,5 @@
-package demo.calendar.service
+package demo.calendar.integration
 
-import demo.calendar.controller.UserController
 import demo.calendar.dto.SingUpRequest
 import demo.calendar.exception.UserAlreadyRegisteredException
 import demo.calendar.repository.UserRepository
@@ -12,20 +11,16 @@ import org.springframework.test.context.ActiveProfiles
 import org.junit.jupiter.api.Test
 import io.kotest.matchers.shouldBe
 import demo.calendar.dto.UserResponse
-import jakarta.transaction.Transactional
+import demo.calendar.service.UserService
 
-@SpringBootTest(
-    properties = [
-        "spring.profiles.active=test"
-    ]
-)
-@Transactional
+@ActiveProfiles("test")
+@SpringBootTest
 class UserServiceTest {
     @Autowired
     lateinit var userRepository: UserRepository
 
     @Autowired
-    lateinit var userController: UserController
+    lateinit var userService: UserService
 
     @AfterEach
     fun cleanup() {
@@ -41,9 +36,9 @@ class UserServiceTest {
             tg = "@amTheRealHitler1337",
             password = "BombardiroCrocodillo",
         )
-        userController.registerUser(newUser)
+        userService.registerUser(newUser)
         shouldThrow<UserAlreadyRegisteredException> {
-            userController.registerUser(newUser)
+            userService.registerUser(newUser)
         }
     }
     @Test
@@ -54,7 +49,7 @@ class UserServiceTest {
             email = "PUPUPUpupunia@popatarakana",
             tg = "@SIGMABOY",
             password = "BOMBARDIROCROCODILLO",)
-        val response = userController.registerUser(newRequest)
+        val response = userService.registerUser(newRequest)
         response shouldBe UserResponse(userName=newRequest.userName, phone=newRequest.phone, email=newRequest.email, tg=newRequest.tg, password=newRequest.password)
     }
 }
