@@ -17,6 +17,7 @@ import io.mockk.*
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
+import java.util.*
 
 
 class UserServiceTest {
@@ -118,6 +119,7 @@ class UserServiceTest {
         }
         exception.message shouldBe "User with such tg has different password"
     }
+
     @Test
     fun `Авторизация пользователя, когда пользователь правильно авторизуется`() {
         val newRequest = AuthorizeRequest(
@@ -132,11 +134,9 @@ class UserServiceTest {
             password = "TRALALELOTRALALA"
         )
         every { userRepository.findByTg(newRequest.tg) } returns user
-        val slot = slot<TokenEntity>()
-        every { tokenRepository.save(capture(slot))} answers{slot.captured}
-        val returnedToken = assertDoesNotThrow<String>{userService.authorizeUser(newRequest)}
-        verify(exactly = 1){tokenRepository.save(any())}
-        assertEquals(/* expected = */ slot.captured.token_value, /* actual = */ returnedToken)
-        assertSame(user, slot.captured.user)
+        mockkStatic(UUID::class)
+        every { UUID.randomUUID().toString() } returns "abc"
+        every { tokenRepository.save(TokenEntity(token_value = "abc", user=user)) } answers{firstArg()}
+        userService.authorizeUser(newRequest) shouldBe "abc"
     }
 }
