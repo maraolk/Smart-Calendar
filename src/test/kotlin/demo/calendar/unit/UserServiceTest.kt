@@ -1,4 +1,4 @@
-package unit
+package demo.calendar.unit
 
 import demo.calendar.dto.AuthorizeRequest
 import demo.calendar.dto.SingUpRequest

@@ -1,4 +1,4 @@
-package service
+package demo.calendar.service
 
 import demo.calendar.controller.UserController
 import demo.calendar.dto.SingUpRequest
