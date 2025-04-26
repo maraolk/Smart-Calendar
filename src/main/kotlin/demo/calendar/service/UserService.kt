@@ -83,14 +83,10 @@ class UserService(
     @Transactional
     fun manageUser(token: String, request: ManageRequest): UserResponse {
         logger.debug("Начало обновления пароля для пользователя: {}", request.tg)
-        val tEntity = tokenRepository.findByValue(token)
-        val user = tEntity?.user
-        if (user == null){
-            logger.warn("Обновление невозможно, токен данного пользователя не валиден")
-            throw NotValidTokenException("No user exists with such token")
-        }
+        val tEntity = tokenRepository.findByToken(token)
         tokenIsValid(tEntity)
-        if (request.oldPassword != user.password){
+        val user = tEntity!!.user
+        if (request.oldPassword != user.password) {
             logger.warn("Неверный пароль")
             throw WrongPasswordException("User with such token has different password")
         }
