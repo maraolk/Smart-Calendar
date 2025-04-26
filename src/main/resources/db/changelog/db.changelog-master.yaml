@@ -2,6 +2,8 @@ databaseChangeLog:
   - include:
       file: db/changelog/changes/users-changeset.yaml
   - include:
-      file: db/changelog/changes/calendars-changeset.yaml
-  - include:
-      file: db/changelog/changes/events-changeset.yaml
+      file: db/changelog/changes/tokens-changeset.yaml
+#  - include:
+#      file: db/changelog/changes/calendars-changeset.yaml
+#  - include:
+#      file: db/changelog/changes/events-changeset.yaml

@@ -7,5 +7,5 @@ import org.springframework.data.jpa.repository.JpaRepository
 interface TokenRepository: JpaRepository<TokenEntity, Long> {
     fun findByUser(user: UserEntity): List<TokenEntity>
 
-    fun findByValue(value: String): TokenEntity?
+    fun findByToken(token: String): TokenEntity?
 }

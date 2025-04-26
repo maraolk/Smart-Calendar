@@ -34,7 +34,7 @@ data class EventEntity(
     val endTime: LocalDateTime,
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     val user: UserEntity,
 
     @Column(nullable=false)

@@ -68,7 +68,7 @@ create table public.calendars
 create table public.tokens
 (
     id bigserial primary key,
-    token_value varchar not null unique,
+    token varchar not null unique,
     user_id not null references public.users(id),
     revoked boolean default false
 
