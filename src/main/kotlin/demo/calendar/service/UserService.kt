@@ -6,13 +6,11 @@ import demo.calendar.dto.SingUpRequest
 import demo.calendar.dto.UserResponse
 import demo.calendar.entity.TokenEntity
 import demo.calendar.entity.UserEntity
-import demo.calendar.exception.NotValidTokenException
-import demo.calendar.exception.UserAlreadyRegisteredException
-import demo.calendar.exception.UserNotFoundException
-import demo.calendar.exception.WrongPasswordException
+import demo.calendar.exception.*
 import demo.calendar.repository.TokenRepository
 import demo.calendar.repository.UserRepository
 import jakarta.transaction.Transactional
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Component
 import java.util.*
 
@@ -21,6 +19,7 @@ class UserService(
     private val userRepository: UserRepository,
     private val tokenRepository: TokenRepository
 ) {
+    private val logger = LoggerFactory.getLogger(this::class.java)
     fun createToken(user: UserEntity): String {
         val token = TokenEntity(
             token = UUID.randomUUID().toString(),
@@ -37,8 +36,12 @@ class UserService(
 
     @Transactional
     fun registerUser(request: SingUpRequest): UserResponse {
+        logger.debug("Начало регистрации пользователя: {}", request.tg)
         val user = userRepository.findByTg(request.tg)
-        if (user != null) throw UserAlreadyRegisteredException("User with this tg is already registered")
+        if (user != null){
+            logger.warn("Регистрация прервана пользователь с таким tg {} уже существует", request.tg)
+            throw UserAlreadyRegisteredException("User with this tg is already registered")
+        }
         userRepository.save(
             UserEntity(
                 username = request.userName,
@@ -48,6 +51,7 @@ class UserService(
                 password = request.password
             )
         )
+        logger.info("Пользователь с такими данными userName: {}, tg: {} успешно сохранен", request.userName, request.tg)
         return UserResponse(
             userName = request.userName,
             email = request.email,
@@ -58,11 +62,22 @@ class UserService(
     }
 
     fun authorizeUser(request: AuthorizeRequest): String {
+        logger.debug("Начало авторизации пользователя: {}", request.tg)
         val user = userRepository.findByTg(request.tg)
-        if (user == null) throw UserNotFoundException("User with this tg not found")
-        if (user.username != request.userName) throw UserNotFoundException("User with such tg has different username")
-        if (user.password != request.password) throw WrongPasswordException("User with such tg has different password")
+        if (user == null) {
+            logger.warn("Авторизация невозможна, пользователь с таким tg: {} не найден", request.tg)
+            throw UserNotFoundException("User with this tg not found")
+        }
+        if (user.username != request.userName){
+            logger.warn("Авторизация невозможна, пользователь с таким tg: {} имеет другое имя пользователя", request.tg)
+            throw WrongUserException("User with such tg has different username")
+        }
+        if (user.password != request.password){
+            logger.warn("Авторизация не удалась, неверный пароль для пользовтеля с таким tg: {}", request.tg)
+            throw WrongPasswordException("User with such tg has different password")
+        }
         val token = createToken(user)
+        logger.info("Авторизация прошла успешно, для пользователя с tg: {} был создан токен", request.tg)
         return token
     }
 
