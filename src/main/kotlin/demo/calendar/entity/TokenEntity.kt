@@ -10,7 +10,7 @@ data class TokenEntity(
     val id: Long = 0,
 
     @Column(nullable = false, unique = true)
-    val token_value: String,
+    val token: String,
 
     @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false)

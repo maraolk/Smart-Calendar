@@ -23,11 +23,11 @@ class UserService(
 ) {
     fun createToken(user: UserEntity): String {
         val token = TokenEntity(
-            token_value = UUID.randomUUID().toString(),
+            token = UUID.randomUUID().toString(),
             user = user
         )
         tokenRepository.save(token)
-        return token.token_value
+        return token.token
     }
 
     fun tokenIsValid(token: TokenEntity?) {
@@ -68,7 +68,7 @@ class UserService(
 
     @Transactional
     fun manageUser(token: String, request: ManageRequest): UserResponse {
-        val tEntity = tokenRepository.findByValue(token)
+        val tEntity = tokenRepository.findByToken(token)
         tokenIsValid(tEntity)
         val user = tEntity!!.user
         if (request.oldPassword != user.password) throw WrongPasswordException("User with such token has different password")
@@ -91,11 +91,11 @@ class UserService(
         )
     }
     fun logout(token: String) {
-        val tEntity = tokenRepository.findByValue(token)
+        val tEntity = tokenRepository.findByToken(token)
         tokenIsValid(tEntity)
         tokenRepository.save(TokenEntity(
             id = tEntity!!.id,
-            token_value = tEntity.token_value,
+            token = tEntity.token,
             user = tEntity.user,
             revoked = true
         ))

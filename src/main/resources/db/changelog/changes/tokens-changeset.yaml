@@ -1,0 +1,37 @@
+databaseChangeLog:
+  - changeSet:
+      id: create-tokens-table
+      author: vasya
+      changes:
+        - createTable:
+            tableName: tokens
+            columns:
+              - column:
+                  name: id
+                  type: bigserial
+                  constraints:
+                    primaryKey: true
+                    nullable: false
+              - column:
+                  name: token
+                  type: varchar(255)
+                  constraints:
+                    nullable: false
+                    unique: true
+              - column:
+                  name: revoked
+                  type: boolean
+                  constraints:
+                    nullable: false
+                    default: false
+
+        - addForeignKeyConstraint:
+            constraintName: fk_tokens_users
+            baseTableName: tokens
+            baseColumnNames: user_id
+            referencedTableName: users
+            referencedColumnNames: id
+
+      rollback:
+        - dropTable:
+            tableName: users

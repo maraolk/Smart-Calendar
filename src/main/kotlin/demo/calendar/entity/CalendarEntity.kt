@@ -1,4 +1,5 @@
 package demo.calendar.entity
+
 import jakarta.persistence.*
 
 //в календаре у нас буквально 1 поле по которому мы можем искать, поэтому реализуем быстрый поиск по нему
@@ -10,6 +11,5 @@ data class CalendarEntity(
     val id: Long = 0,
 
     @Column(unique = true, nullable = false)
-    val calendarName: String
-
+    val calendarName: String,
 )

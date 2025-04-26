@@ -11,11 +11,11 @@ data class RegistrationEntity(
     val id: Long = 0,
 
     @ManyToOne(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id", nullable = false)
+    @JoinColumn(name = "user_id", nullable = false)
     val user: UserEntity,
 
-    @OneToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "event_id", nullable = false)
     val event: EventEntity,
 
     @Column(nullable=false)

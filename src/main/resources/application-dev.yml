@@ -6,6 +6,8 @@ spring:
     url: jdbc:postgresql://localhost:5432/smart-calendar
     username: postgres
     password: 123
+  liquibase:
+    enabled: false
   jpa:
     show-sql: true
     hibernate:

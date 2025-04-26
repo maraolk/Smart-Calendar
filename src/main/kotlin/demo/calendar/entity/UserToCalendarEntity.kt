@@ -9,14 +9,13 @@ data class UserToCalendarEntity(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "user_id", nullable = false)
     val user: UserEntity,
 
-    @ManyToMany(fetch = FetchType.EAGER)
-    @JoinColumn(name = "id", nullable = false)
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "calendar_id", nullable = false)
     val calendar: CalendarEntity,
 
-    @Column(nullable = false)
     val access_type: String
 )
