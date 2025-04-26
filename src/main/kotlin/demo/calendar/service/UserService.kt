@@ -71,10 +71,7 @@ class UserService(
         val tEntity = tokenRepository.findByToken(token)
         tokenIsValid(tEntity)
         val user = tEntity!!.user
-        if (request.oldPassword != user.password){
-            logger.warn("Неверный пароль")
-            throw WrongPasswordException("User with such token has different password")
-        }
+        if (request.oldPassword != user.password) throw WrongPasswordException("User with such token has different password")
         userRepository.save(
             UserEntity(
                 id = user.id,
