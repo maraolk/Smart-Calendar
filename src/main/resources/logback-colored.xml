@@ -5,7 +5,13 @@
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>
-                %clr(%d{HH:mm:ss.SSS}){blue} %highlight(%-5level) [%mdc{requestId}] userId=%mdc{userId} %clr([%thread]){purple} %clr(%logger{36}){cyan} - %msg%n%wex
+                %clr(%d{HH:mm:ss.SSS}){green} [%thread] %clr(%-5level){
+                ERROR=red,
+                WARN=yellow,
+                INFO=blue,
+                DEBUG=green,
+                TRACE=magenta
+                } - [requestId=%X{requestId:-N/A}, userId=%X{userId:-N/A}] %clr(%logger{36}){cyan} - %msg%n%wex
             </pattern>
         </encoder>
     </appender>
@@ -14,5 +20,7 @@
         <appender-ref ref="STDOUT"/>
     </root>
     <logger name="demo.calendar" level="DEBUG" />
+    <logger name="org.springframework" level="INFO"/>
+    <logger name="org.hibernate" level="WARN"/>
 
 </configuration>
