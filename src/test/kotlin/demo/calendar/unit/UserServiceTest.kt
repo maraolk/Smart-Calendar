@@ -136,7 +136,7 @@ class UserServiceTest {
         every { userRepository.findByTg(newRequest.tg) } returns user
         mockkStatic(UUID::class)
         every { UUID.randomUUID().toString() } returns "abc"
-        every { tokenRepository.save(TokenEntity(token_value = "abc", user=user)) } answers{firstArg()}
+        every { tokenRepository.save(TokenEntity(token = "abc", user=user)) } answers{firstArg()}
         userService.authorizeUser(newRequest) shouldBe "abc"
     }
 }
