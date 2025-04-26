@@ -68,6 +68,7 @@ class UserService(
 
     @Transactional
     fun manageUser(token: String, request: ManageRequest): UserResponse {
+        logger.debug("Начало обновления пароля для пользователя: {}", request.tg)
         val tEntity = tokenRepository.findByToken(token)
         tokenIsValid(tEntity)
         val user = tEntity!!.user
