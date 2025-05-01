@@ -69,7 +69,7 @@ class UserService(
             throw UserNotFoundException("User with this tg not found")
         }
         if (!user.active) {
-            logger.warn("Авторизация невозможна, пользователь с таким tg: {} дезактивирован", request.tg)
+            logger.warn("Авторизация невозможна, пользователь с таким tg: {} деактивирован", request.tg)
             throw UserIsDeactivated("User with this tg is deactivated")
         }
         if (user.username != request.userName){
