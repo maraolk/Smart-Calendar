@@ -30,8 +30,14 @@ class UserService(
     }
 
     fun tokenIsValid(token: TokenEntity?) {
-        if (token == null) throw NotValidTokenException("No user exists with such token")
-        if (token.revoked) throw NotValidTokenException("User's token has been already revoked")
+        if (token == null){
+            logger.warn("Ошибка идентификации пользователя по токену, токен не валиден")
+            throw NotValidTokenException("No user exists with such token")
+        }
+        if (token.revoked){
+            logger.warn("Ошибка идентификации пользователя по токену, срок действия токена истек")
+            throw NotValidTokenException("User's token has been already revoked")
+        }
     }
 
     @Transactional
@@ -81,16 +87,16 @@ class UserService(
             throw WrongPasswordException("User with such tg has different password")
         }
         val token = createToken(user)
-        logger.info("Авторизация прошла успешно, для пользователя с tg: {} был создан токен", request.tg)
+        logger.info("Авторизация прошла успешно, для пользователя с tg: {}", request.tg)
         return token
     }
 
     @Transactional
     fun manageUser(token: String, request: ManageRequest): UserResponse {
-        logger.debug("Начало обновления пароля для пользователя: {}", request.tg)
         val tEntity = tokenRepository.findByToken(token)
         tokenIsValid(tEntity)
         val user = tEntity!!.user
+        logger.debug("Начало обновления пользователя с тг: {}", user.tg)
         if (request.oldPassword != user.password) {
             logger.warn("Неверный пароль")
             throw WrongPasswordException("User with such token has different password")
@@ -101,35 +107,39 @@ class UserService(
                 username = request.userName,
                 email = request.email,
                 phone = request.phone,
-                tg = request.tg,
+                tg = user.tg,
                 password = request.password
             )
         )
+        logger.info("Обновление пользователя с тг {} прошло успешно", user.tg)
         return UserResponse(
             userName = request.userName,
             email = request.email,
             phone = request.phone,
-            tg = request.tg,
+            tg = user.tg,
             password = request.password
         )
     }
     fun logout(token: String) {
         val tEntity = tokenRepository.findByToken(token)
         tokenIsValid(tEntity)
+        logger.debug("Попытка выхода пользователя с тг {} из аккаунта", tEntity!!.user.tg)
         tokenRepository.save(TokenEntity(
-            id = tEntity!!.id,
+            id = tEntity.id,
             token = tEntity.token,
             user = tEntity.user,
             revoked = true
         ))
+        logger.info("Выход пользователя с тг {} прошел успешно", tEntity.user.tg)
     }
     @Transactional
     fun deleteUser(token: String, password: String) {
         val tEntity = tokenRepository.findByToken(token)
         tokenIsValid(tEntity)
-        val user = tEntity!!.user
+        logger.debug("Начало удаления пользователя с тг {}", tEntity!!.user.tg)
+        val user = tEntity.user
         if (user.password != password) {
-            logger.warn("Неверный пароль")
+            logger.warn("Неверный пароль для пользователя с тг {}", user.tg)
             throw WrongPasswordException("User with such token has different password")
         }
         tokenRepository.save(TokenEntity(
@@ -147,5 +157,6 @@ class UserService(
             password = user.password,
             active = false
         ))
+        logger.info("Удаление пользователя с тг {} прошло успешно", user.tg)
     }
 }
