@@ -4,10 +4,11 @@ create table public.users
 (
     id bigserial primary key,
     username varchar(255) not null unique,
-    phone varchar(12) unique,
-    email varchar(255) unique,
+    phone varchar(12),
+    email varchar(255),
     tg varchar(255) not null unique,
-    password varchar not null
+    password varchar not null,
+    active boolean not null default true
 )
 
 --таблица с описанием мероприятий (название, краткое описание мероприятия, его адрес проведения, координаты,

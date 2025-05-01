@@ -17,16 +17,18 @@ data class UserEntity(
     @Column(unique = true, nullable = false)
     val username: String,
 
-    @Column(unique = true)
+    @Column
     val email: String?,
 
-    @Column(unique = true)
+    @Column
     val phone: String?,
 
     @Column(unique = true, nullable=false)
     val tg: String,
 
     @Column(nullable=false)
-    val password: String
+    val password: String,
 
+    @Column(nullable = false)
+    val active: Boolean = true
 )
