@@ -21,13 +21,9 @@ databaseChangeLog:
               - column:
                   name: phone
                   type: varchar(12)
-                  constraints:
-                    unique: true
               - column:
                   name: email
                   type: varchar(255)
-                  constraints:
-                    unique: true
               - column:
                   name: tg
                   type: varchar(255)
@@ -39,6 +35,12 @@ databaseChangeLog:
                   type: varchar(255)
                   constraints:
                     nullable: false
+              - column:
+                  name: active
+                  type: boolean
+                  constraints:
+                    nullable: false
+                    default: true
 
       rollback:
         - dropTable:

@@ -22,4 +22,7 @@ class UserController(
 
     @PutMapping("/logout")
     fun logOut(@RequestParam("token") token: String) = userService.logout(token)
+
+    @PutMapping("/delete")
+    fun deleteUser(@RequestParam("token") token: String, @RequestParam("password") password: String) = userService.deleteUser(token, password)
 }

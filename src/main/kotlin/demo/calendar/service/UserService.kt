@@ -68,12 +68,16 @@ class UserService(
             logger.warn("Авторизация невозможна, пользователь с таким tg: {} не найден", request.tg)
             throw UserNotFoundException("User with this tg not found")
         }
+        if (!user.active) {
+            logger.warn("Авторизация невозможна, пользователь с таким tg: {} деактивирован", request.tg)
+            throw UserIsDeactivated("User with this tg is deactivated")
+        }
         if (user.username != request.userName){
             logger.warn("Авторизация невозможна, пользователь с таким tg: {} имеет другое имя пользователя", request.tg)
             throw WrongUserException("User with such tg has different username")
         }
         if (user.password != request.password){
-            logger.warn("Авторизация не удалась, неверный пароль для пользовтеля с таким tg: {}", request.tg)
+            logger.warn("Авторизация не удалась, неверный пароль для пользователя с таким tg: {}", request.tg)
             throw WrongPasswordException("User with such tg has different password")
         }
         val token = createToken(user)
@@ -117,6 +121,31 @@ class UserService(
             token = tEntity.token,
             user = tEntity.user,
             revoked = true
+        ))
+    }
+    @Transactional
+    fun deleteUser(token: String, password: String) {
+        val tEntity = tokenRepository.findByToken(token)
+        tokenIsValid(tEntity)
+        val user = tEntity!!.user
+        if (user.password != password) {
+            logger.warn("Неверный пароль")
+            throw WrongPasswordException("User with such token has different password")
+        }
+        tokenRepository.save(TokenEntity(
+            id = tEntity.id,
+            token = tEntity.token,
+            user = tEntity.user,
+            revoked = true
+        ))
+        userRepository.save(UserEntity(
+            id = user.id,
+            username = user.username,
+            email = user.email,
+            phone = user.phone,
+            tg = user.tg,
+            password = user.password,
+            active = false
         ))
     }
 }
