@@ -67,7 +67,7 @@ class UserServiceTest {
             ),
 
         )
-        val exception = shouldNotThrow<NotValidTokenException> {
+        shouldNotThrow<NotValidTokenException> {
             userService.tokenIsValid(token)
         }
     }
