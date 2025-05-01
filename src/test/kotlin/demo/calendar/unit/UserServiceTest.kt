@@ -9,8 +9,10 @@ import demo.calendar.exception.*
 import demo.calendar.repository.TokenRepository
 import demo.calendar.repository.UserRepository
 import demo.calendar.service.UserService
+import io.kotest.assertions.throwables.shouldNotThrow
 import io.kotest.matchers.ints.exactly
 import io.kotest.matchers.shouldBe
+import io.kotest.matchers.shouldNot
 import io.mockk.*
 import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.*
@@ -50,6 +52,24 @@ class UserServiceTest {
             userService.tokenIsValid(token)
         }
         exception.message shouldBe "User's token has been already revoked"
+    }
+
+    @Test
+    fun `Проверка валидности токена, токен валиден`() {
+        val token = TokenEntity(
+            token = "1",
+            user = UserEntity(
+                username = "Адольф",
+                phone = "1488",
+                email = "AustrianPainter@nazi.de",
+                tg = "@amTheRealHitler1337",
+                password = "BombardiroCrocodillo",
+            ),
+
+        )
+        val exception = shouldNotThrow<NotValidTokenException> {
+            userService.tokenIsValid(token)
+        }
     }
 
     @Test
