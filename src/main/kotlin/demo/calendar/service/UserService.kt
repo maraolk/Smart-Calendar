@@ -87,7 +87,7 @@ class UserService(
             throw WrongPasswordException("User with such tg has different password")
         }
         val token = createToken(user)
-        logger.info("Авторизация прошла успешно, для пользователя с tg: {} был создан токен {}", request.tg, token)
+        logger.info("Авторизация прошла успешно, для пользователя с tg: {}", request.tg)
         return token
     }
 
@@ -96,7 +96,7 @@ class UserService(
         val tEntity = tokenRepository.findByToken(token)
         tokenIsValid(tEntity)
         val user = tEntity!!.user
-        logger.debug("Начало обновления пользователя с токеном: {}", user.tg)
+        logger.debug("Начало обновления пользователя с тг: {}", user.tg)
         if (request.oldPassword != user.password) {
             logger.warn("Неверный пароль")
             throw WrongPasswordException("User with such token has different password")
@@ -121,23 +121,23 @@ class UserService(
         )
     }
     fun logout(token: String) {
-        logger.debug("Попытка выхода пользователя с токеном {} из аккаунта", token)
         val tEntity = tokenRepository.findByToken(token)
         tokenIsValid(tEntity)
-        logger.info("Выход пользователя с токеном {} прошел успешно", token)
+        logger.debug("Попытка выхода пользователя с тг {} из аккаунта", tEntity!!.user.tg)
         tokenRepository.save(TokenEntity(
-            id = tEntity!!.id,
+            id = tEntity.id,
             token = tEntity.token,
             user = tEntity.user,
             revoked = true
         ))
+        logger.info("Выход пользователя с тг {} прошел успешно", tEntity.user.tg)
     }
     @Transactional
     fun deleteUser(token: String, password: String) {
-        logger.debug("Начало удаления пользователя с токеном {}", token)
         val tEntity = tokenRepository.findByToken(token)
         tokenIsValid(tEntity)
-        val user = tEntity!!.user
+        logger.debug("Начало удаления пользователя с тг {}", tEntity!!.user.tg)
+        val user = tEntity.user
         if (user.password != password) {
             logger.warn("Неверный пароль для пользователя с тг {}", user.tg)
             throw WrongPasswordException("User with such token has different password")
