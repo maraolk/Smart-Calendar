@@ -11,11 +11,9 @@ import demo.calendar.repository.TokenRepository
 import demo.calendar.repository.UserRepository
 import demo.calendar.service.UserService
 import io.kotest.assertions.throwables.shouldNotThrow
-import io.kotest.matchers.ints.exactly
+import io.kotest.assertions.throwables.shouldThrow
 import io.kotest.matchers.shouldBe
-import io.kotest.matchers.shouldNot
 import io.mockk.*
-import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Assertions.*
 import org.junit.jupiter.api.Test
 import java.util.*
@@ -206,5 +204,131 @@ class UserServiceTest {
         every { UUID.randomUUID().toString() } returns "abc"
         every { tokenRepository.save(TokenEntity(token = "abc", user=user)) } answers{firstArg()}
         userService.authorizeUser(newRequest) shouldBe "abc"
+    }
+
+    @Test
+    fun `Изменение пользователя, неверный пароль`() {
+        val request = ManageRequest(
+            userName = "Bob",
+            email = "jdfjgd@mail.ru",
+            phone = "789573542874",
+            password = "TRALALELOTRALALA",
+            oldPassword = "123")
+        every { tokenRepository.findByToken("token") } returns TokenEntity(
+            token = "token",
+            user = UserEntity(
+                username = "Bob",
+                email = "jdfjgd@mail.ru",
+                phone = "789573542874",
+                tg = "@SIGMABOY",
+                password = "TRALALELOTRALALA",
+            )
+        )
+        shouldThrow<WrongPasswordException> {
+            userService.manageUser("token", request)
+        }
+    }
+
+    @Test
+    fun `Изменение пользователя, успешное выполнение`() {
+        val request = ManageRequest(
+            userName = "Bob",
+            email = "jdfjgd@mail.ru",
+            phone = "789573542874",
+            password = "TRALALELOTRALALA",
+            oldPassword = "123")
+        every { tokenRepository.findByToken("token") } returns TokenEntity(
+            token = "token",
+            user = UserEntity(
+                username = "Bob",
+                email = "jdfjgd@mail.ru",
+                phone = "789573542874",
+                tg = "@SIGMABOY",
+                password = "123",
+            )
+        )
+        every { userRepository.save(UserEntity(
+            username = "Bob",
+            tg = "@SIGMABOY",
+            email = "jdfjgd@mail.ru",
+            phone = "789573542874",
+            password = "TRALALELOTRALALA",
+        )) } answers { firstArg() }
+        shouldNotThrow<WrongPasswordException> {
+            userService.manageUser("token", request)
+        }
+    }
+
+    @Test
+    fun `Выход пользователя из аккаунта, успешное выполнение`() {
+        every { tokenRepository.findByToken("token") } returns TokenEntity(
+            token = "token",
+            user = UserEntity(
+                username = "Bob",
+                email = "jdfjgd@mail.ru",
+                phone = "789573542874",
+                tg = "@SIGMABOY",
+                password = "123",
+            )
+        )
+        every { tokenRepository.save(TokenEntity(
+            token = "token",
+            user = UserEntity(
+                username = "Bob",
+                email = "jdfjgd@mail.ru",
+                phone = "789573542874",
+                tg = "@SIGMABOY",
+                password = "123"),
+            revoked = true))
+        } answers { firstArg() }
+        shouldNotThrow<NotValidTokenException> { userService.logout("token") }
+    }
+
+    @Test
+    fun `Удаление аккаунта пользователя, неверный пароль`() {
+        every { tokenRepository.findByToken("token") } returns TokenEntity(
+            token = "token",
+            user = UserEntity(
+                username = "Bob",
+                email = "jdfjgd@mail.ru",
+                phone = "789573542874",
+                tg = "@SIGMABOY",
+                password = "123",
+            )
+        )
+        shouldThrow<WrongPasswordException> { userService.deleteUser("token", "TRALALELOTRALALA") }
+    }
+
+    @Test
+    fun `Удаление аккаунта пользователя, успешное выполнение`() {
+        every { tokenRepository.findByToken("token") } returns TokenEntity(
+            token = "token",
+            user = UserEntity(
+                username = "Bob",
+                email = "jdfjgd@mail.ru",
+                phone = "789573542874",
+                tg = "@SIGMABOY",
+                password = "123",
+            )
+        )
+        every { tokenRepository.save(TokenEntity(
+            token = "token",
+            user = UserEntity(
+                username = "Bob",
+                email = "jdfjgd@mail.ru",
+                phone = "789573542874",
+                tg = "@SIGMABOY",
+                password = "123"),
+            revoked = true))
+        } answers { firstArg() }
+        every { userRepository.save(UserEntity(
+            username = "Bob",
+            email = "jdfjgd@mail.ru",
+            phone = "789573542874",
+            tg = "@SIGMABOY",
+            password = "123",
+            active = false))
+        } answers { firstArg() }
+        shouldNotThrow<WrongPasswordException> { userService.deleteUser("token", "123") }
     }
 }
