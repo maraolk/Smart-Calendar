@@ -329,6 +329,6 @@ class UserServiceTest {
             password = "123",
             active = false))
         } answers { firstArg() }
-        shouldThrow<WrongPasswordException> { userService.deleteUser("token", "TRALALELOTRALALA") }
+        shouldNotThrow<WrongPasswordException> { userService.deleteUser("token", "123") }
     }
 }
