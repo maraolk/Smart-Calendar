@@ -1,6 +1,7 @@
 package demo.calendar.unit
 
 import demo.calendar.dto.AuthorizeRequest
+import demo.calendar.dto.ManageRequest
 import demo.calendar.dto.SingUpRequest
 import demo.calendar.dto.UserResponse
 import demo.calendar.entity.TokenEntity
@@ -97,7 +98,7 @@ class UserServiceTest {
 
     }
     @Test
-    fun `Регистрация пользователя, когда пользователь правильно регистрируется`() {
+    fun `Регистрация пользователя, пользователь правильно регистрируется`() {
         val newRequest = SingUpRequest(
             userName = "Ostin",
             phone = "891234567829",
@@ -127,7 +128,7 @@ class UserServiceTest {
         )
     }
     @Test
-    fun `Авторизация пользователя, когда он пытается зайти с неверным тг`(){
+    fun `Авторизация пользователя, пользователь пытается зайти с неверным тг`(){
         val newRequest = AuthorizeRequest(
             userName = "Bob",
             tg = "@SIGMABOY",
@@ -140,7 +141,27 @@ class UserServiceTest {
     }
 
     @Test
-    fun `Авторизация пользователя, когда он пытается зайти в тг с неправильным никнеймом`(){
+    fun `Авторизация пользователя, аккаунт диактивирован`(){
+        val newRequest = AuthorizeRequest(
+            userName = "Bob",
+            tg = "@SIGMABOY",
+            password = "TRALALELOTRALALA",)
+        every { userRepository.findByTg(newRequest.tg) } returns UserEntity(
+            username = newRequest.userName,
+            email = "a",
+            phone = "a",
+            tg = newRequest.tg,
+            password = newRequest.password,
+            active = false
+        )
+        val exception = assertThrows(UserIsDeactivated::class.java) {
+            userService.authorizeUser(newRequest)
+        }
+        exception.message shouldBe "User with this tg is deactivated"
+    }
+
+    @Test
+    fun `Авторизация пользователя, пользователь пытается зайти в тг с неправильным никнеймом`(){
         val newRequest = AuthorizeRequest(
             userName = "Bob",
             tg = "@SIGMABOY",
@@ -154,7 +175,7 @@ class UserServiceTest {
     }
 
     @Test
-    fun `Авторизация пользователя, когда он пытается зайти в тг с неправильным паролем`(){
+    fun `Авторизация пользователя, пользователь пытается зайти в тг с неправильным паролем`(){
         val newRequest = AuthorizeRequest(
             userName = "Bob",
             tg = "@SIGMABOY",
@@ -168,7 +189,7 @@ class UserServiceTest {
     }
 
     @Test
-    fun `Авторизация пользователя, когда пользователь правильно авторизуется`() {
+    fun `Авторизация пользователя, пользователь правильно авторизуется`() {
         val newRequest = AuthorizeRequest(
             userName = "Bob",
             tg = "@SIGMABOY",
