@@ -196,17 +196,19 @@ class UserServiceTest {
             tg = "@SIGMABOY",
             password = "BRBRPATAPIM"
         )
-        userRepository.save(UserEntity(
+        val user = UserEntity(
             username = newRequest.userName,
             tg = newRequest.tg,
             password = newRequest.password,
             phone = "789672536827",
             email = "@BOMBOMBINIGUSINI",
-        ))
+        )
+        userRepository.save(user)
         mockkStatic(UUID::class)
         every { UUID.randomUUID().toString() } returns "abc"
         val response = userService.authorizeUser(newRequest)
         response shouldBe "abc"
+        tokenRepository.findByToken("abc")!!.user shouldBe user
     }
 
     @Test
@@ -251,6 +253,13 @@ class UserServiceTest {
         shouldNotThrow<WrongPasswordException> {
             userService.manageUser("token", newRequest)
         }
+        tokenRepository.findByToken("token")!!.user shouldBe UserEntity(
+            id=1,
+            username = "Bob",
+            email = "jdfjgd@mail.ru",
+            phone = "789573542874",
+            password = "TRALALELOTRALALA",
+            tg = "@TUNGTUNGTUNGTUNGSAHUUUR")
     }
 
     @Test
@@ -267,6 +276,7 @@ class UserServiceTest {
         shouldNotThrow<NotValidTokenException> {
             userService.logout("token")
         }
+        tokenRepository.findByToken("token")!!.revoked shouldBe true
     }
 
     @Test
@@ -295,5 +305,6 @@ class UserServiceTest {
         userRepository.save(user)
         tokenRepository.save(TokenEntity(token="token", user=user))
         shouldNotThrow<WrongPasswordException> { userService.deleteUser("token", "TRALALELOTRALALA") }
+        tokenRepository.findByToken("token")!!.user.active shouldBe false
     }
 }
