@@ -1,6 +1,6 @@
 package demo.calendar.dto
 
 data class CreateCalendarRequest(
-    val todo: String,
-) {
-}
+    val calendarName: String,
+    val isPublic: Boolean
+)

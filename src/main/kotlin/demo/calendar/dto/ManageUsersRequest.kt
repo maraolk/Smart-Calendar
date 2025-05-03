@@ -1,7 +1,7 @@
 package demo.calendar.dto
 
 data class ManageUsersRequest(
-    val calendarId: Long,
+    val calendarName: String,
     val userTg: String,
     val operation: Operation
 )

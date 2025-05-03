@@ -1,10 +1,6 @@
 package demo.calendar.dto
 
 data class ManageCalendarRequest(
-    val calendarId: Long,
-    val operation: Operation,
-    val newCalendar: UpdateCalendar?
+    val calendarName: String,
+    val isPublic: Boolean
 )
-{
-    enum class Operation{DELETE, UPDATE}
-}

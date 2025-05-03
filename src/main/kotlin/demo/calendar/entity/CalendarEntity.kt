@@ -11,5 +11,11 @@ data class CalendarEntity(
     val id: Long = 0,
 
     @Column(unique = true, nullable = false)
-    val calendarName: String,
+    val calendar_name: String,
+
+    @Column(nullable=false)
+    val is_public: Boolean = false,
+
+    @Column(nullable=false)
+    val active: Boolean = true,
 )
