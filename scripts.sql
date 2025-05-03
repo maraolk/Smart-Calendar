@@ -18,11 +18,10 @@ create table public.events(
     title varchar(255) not null,
     description varchar,
     address varchar,
-    latitude decimal(10, 8),
-    longitude decimal(10, 8),
     start_time timestamp not null,
     end_time timestamp not null,
     organizer_id bigint not null references public.users(id),
+    calendar_id bigint not null references public.calendars(id)
     status varchar not null default('active'),
     average_rating decimal(3, 2) default(0.00)
 )
@@ -55,22 +54,19 @@ create table public.user_to_calendar(
     id bigserial primary key,
     calendar_id bigint not null references public.calendars(id),
     user_id bigint not null references public.users(id),
-    access_type not null
+    access_type varchar not null default('ADMINISTRATOR')
 )
 create table public.calendars
 (
     id bigserial primary key,
-    calendar_name varchar(255) not null unique,
+    calendar_name varchar(255) not null,
+    is_public boolean not null default false,
+    active boolean not null default false
 )
---позднее будет создана таблица для календарей
---она будет создана после того, как мы поймем как интегрироваться с внешними серверами,
---такими как гугл календарь, яндекс календарь и прочее
-
 create table public.tokens
 (
     id bigserial primary key,
     token varchar not null unique,
     user_id not null references public.users(id),
     revoked boolean default false
-
 )

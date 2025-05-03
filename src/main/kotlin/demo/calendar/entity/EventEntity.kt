@@ -37,6 +37,10 @@ data class EventEntity(
     @JoinColumn(name = "user_id", nullable = false)
     val user: UserEntity,
 
+    @ManyToOne(fetch = FetchType.EAGER)
+    @JoinColumn(name = "calendar_id", nullable = false)
+    val calendar: CalendarEntity,
+
     @Column(nullable=false)
     val status: String="active",
 
