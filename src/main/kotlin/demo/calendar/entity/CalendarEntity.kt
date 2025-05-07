@@ -10,7 +10,7 @@ data class CalendarEntity(
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     val id: Long = 0,
 
-    @Column(unique = true, nullable = false)
+    @Column(nullable = false)
     val calendar_name: String,
 
     @Column(nullable=false)
@@ -18,4 +18,10 @@ data class CalendarEntity(
 
     @Column(nullable=false)
     val active: Boolean = true,
+
+    @Column(nullable=false, unique=true)
+    val teg: String,
+
+    @Column
+    val description: String
 )

@@ -6,4 +6,5 @@ import java.util.*
 
 interface CalendarRepository: JpaRepository<CalendarEntity, Long> {
     fun findByCalendarName(calendarName: String): CalendarEntity?
+    fun findByTeg(teg: String): CalendarEntity?
 }

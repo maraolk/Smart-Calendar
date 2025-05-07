@@ -59,9 +59,11 @@ create table public.user_to_calendar(
 create table public.calendars
 (
     id bigserial primary key,
-    calendar_name varchar(255) not null unique,
+    calendar_name varchar(255) not null,
     is_public boolean not null default false,
-    active boolean not null default true
+    active boolean not null default true,
+    teg varchar(255) not null unique,
+    description varchar(255)
 )
 create table public.tokens
 (
