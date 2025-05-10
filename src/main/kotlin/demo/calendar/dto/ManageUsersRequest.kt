@@ -1,10 +1,7 @@
 package demo.calendar.dto
 
 data class ManageUsersRequest(
-    val calendarName: String,
+    val calendarTeg: String,
     val userTg: String,
-    val operation: Operation
+    val accessType: String
 )
-{
-    enum class Operation{ADD, DELETE, VIEWER, MODERATOR, ADMIN}
-}
