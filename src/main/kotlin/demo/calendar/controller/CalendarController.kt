@@ -13,7 +13,7 @@ class CalendarController(
     fun createCalendar(@RequestParam("token") token: String, @RequestBody request: CreateCalendarRequest) = calendarService.createCalendar(token, request)
 
     @PutMapping("/manageUsers")
-    fun manageUsers(@RequestParam("token") token : String, @RequestBody request: ManageUsersRequest) = calendarService.manageUser(token, request)
+    fun manageUsers(@RequestParam("token") token : String, @RequestBody request: ManageUsersRequest) = calendarService.manageUsers(token, request)
 
     @PutMapping("/manageCalendar")
     fun manageCalendar(@RequestParam("token") token : String, @RequestBody request: ManageCalendarRequest) = calendarService.manageCalendar(token, request)
