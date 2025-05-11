@@ -15,6 +15,7 @@ class CalendarService(
     private val userToCalendarRepository: UserToCalendarRepository,
     private val calendarRepository: CalendarRepository,
     private val eventRepository: EventRepository,
+    private val userRepository: UserRepository,
     private val tokenRepository: TokenRepository,
     private val userService: UserService
 ) {
@@ -46,24 +47,24 @@ class CalendarService(
         )
     }
 
+    @Transactional
     fun manageCalendar(token: String, request: ManageCalendarRequest): CalendarResponse {
         val tEntity = tokenRepository.findByToken(token)
         userService.tokenIsValid(tEntity)
         val user = tEntity!!.user
-        if(calendarRepository.findByTeg(request.teg) == null){
-            throw InvalidTegException("Calendar with such teg does not exists")
-        }
-        if(!userToCalendarRepository.findByUser(user)!!.calendar.active){
+        val calendar = calendarRepository.findByTeg(request.teg)
+            ?: throw InvalidTegException("Calendar with such teg does not exists")
+        if (!calendar.active){
             throw NotActiveCalendarException("This calendar is not active")
         }
-        val calendar = calendarRepository.findByTeg(request.teg)!!
-        if(userToCalendarRepository.findByUser(user) == null || userToCalendarRepository.findByUser(user)!!.access_type == "DELETED"){
+        val accessType = userToCalendarRepository.findByUserAndCalendar(user, calendar)?.access_type
+        if (accessType == null || accessType == "DELETED"){
             if(!calendar.is_public){
                 throw PrivateCalendarException("This calendar is private, you can't interact with it.")
             }
-            throw LimitedAccessRightsException("You do not have access rights to change this calendar, you can only view it.")
+            throw LimitedAccessRightsException("You do not have access rights to manage this calendar, you can only view it.")
         }
-        if(userToCalendarRepository.findByUser(user)!!.access_type == "VIEWER" || userToCalendarRepository.findByUser(user)!!.access_type == "ORGANIZER"){
+        if (accessType == "VIEWER" || accessType == "ORGANIZER"){
             throw LimitedAccessRightsException("You do not have access rights to change this calendar.")
         }
         val newCalendar = CalendarEntity(
@@ -80,28 +81,58 @@ class CalendarService(
             teg = request.teg,
             description = request.description)
     }
-    fun manageUser(token: String, request: ManageUsersRequest){
-        TODO()
+
+    @Transactional
+    fun manageUsers(token: String, request: ManageUsersRequest){
+        val tEntity = tokenRepository.findByToken(token)
+        userService.tokenIsValid(tEntity)
+        val user = tEntity!!.user
+        val calendar = calendarRepository.findByTeg(request.teg) ?: throw InvalidTegException("Calendar with such teg does not exists")
+        if (!calendar.active){
+            throw NotActiveCalendarException("This calendar is not active")
+        }
+        val accessType = userToCalendarRepository.findByUserAndCalendar(user, calendar)?.access_type
+        if (accessType == null || accessType == "DELETED"){
+            if(!calendar.is_public){
+                throw PrivateCalendarException("This calendar is private, you can't interact with it.")
+            }
+            throw LimitedAccessRightsException("You do not have access rights to manage this calendars users, you can only view it.")
+        }
+        val newUser = userRepository.findByTg(request.userTg) ?: throw UserNotFoundException("User with this tg not found")
+        val oldAccessType = userToCalendarRepository.findByUserAndCalendar(newUser, calendar)
+        if (accessType == "VIEWER") throw LimitedAccessRightsException("You do not have access rights to manage this calendars users")
+        else if (accessType == "ORGANIZER" && request.accessType != "VIEWER" && request.accessType != "DELETED") throw LimitedAccessRightsException("You do not have access rights to manage this calendars users")
+        else if (accessType == "MODERATOR" && (request.accessType == "MODERATOR" || request.accessType == "ADMINISTRATOR")) throw LimitedAccessRightsException("You do not have access rights to manage this calendars users")
+        if (oldAccessType != null) {
+            if (accessType == "ORGANIZER" && oldAccessType.access_type != "VIEWER" && oldAccessType.access_type != "DELETED") throw LimitedAccessRightsException("You do not have access rights to manage this calendars users")
+            else if (accessType == "MODERATOR" && (oldAccessType.access_type == "MODERATOR" || oldAccessType.access_type == "ADMINISTRATOR")) throw LimitedAccessRightsException("You do not have access rights to manage this calendars users")
+            else if (accessType == "ADMINISTRATOR" && oldAccessType.access_type == accessType) TODO("Пока не знаю что делать, если админ пытается менять админа")
+            userToCalendarRepository.save(UserToCalendarEntity(oldAccessType.id, newUser, calendar, request.accessType))
+        }
+        else {
+            userToCalendarRepository.save(UserToCalendarEntity(user = newUser, calendar = calendar, access_type = request.accessType))
+        }
+
     }
 
+    @Transactional
     fun deleteCalendar(token:String, request: DeleteCalendarRequest){
         val tEntity = tokenRepository.findByToken(token)
         userService.tokenIsValid(tEntity)
         val user = tEntity!!.user
-        if(calendarRepository.findByTeg(request.calendarTeg) == null){
-            throw InvalidTegException("Calendar with such teg does not exists")
-        }
-        val calendar = calendarRepository.findByTeg(request.calendarTeg)!!
-        if(!userToCalendarRepository.findByUser(user)!!.calendar.active){
+        val calendar = calendarRepository.findByTeg(request.teg)
+            ?: throw InvalidTegException("Calendar with such teg does not exists")
+        if (!calendar.active){
             throw NotActiveCalendarException("This calendar is not active")
         }
-        if(userToCalendarRepository.findByUser(user) == null || userToCalendarRepository.findByUser(user)!!.access_type == "DELETED"){
+        val accessType = userToCalendarRepository.findByUserAndCalendar(user, calendar)?.access_type
+        if (accessType == null || accessType == "DELETED"){
             if(!calendar.is_public){
                 throw PrivateCalendarException("This calendar is private, you can't interact with it.")
             }
-            throw LimitedAccessRightsException("You do not have access rights to delete this calendar, you can only view it.")
+            throw LimitedAccessRightsException("You do not have access rights to manage this calendar, you can only view it.")
         }
-        if(userToCalendarRepository.findByUser(user)!!.access_type == "VIEWER" || userToCalendarRepository.findByUser(user)!!.access_type == "ORGANIZER" || userToCalendarRepository.findByUser(user)!!.access_type == "MODERATOR"){
+        if (accessType == "VIEWER" || accessType == "ORGANIZER" || accessType == "MODERATOR"){
             throw LimitedAccessRightsException("You do not have access rights to delete this calendar.")
         }
         val newCalendar = CalendarEntity(

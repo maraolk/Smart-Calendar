@@ -1,7 +1,7 @@
 package demo.calendar.dto
 
 data class ManageUsersRequest(
-    val calendarTeg: String,
+    val teg: String,
     val userTg: String,
     val accessType: String
 )
