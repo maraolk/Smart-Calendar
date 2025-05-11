@@ -101,12 +101,12 @@ class CalendarService(
         val newUser = userRepository.findByTg(request.userTg) ?: throw UserNotFoundException("User with this tg not found")
         val oldAccessType = userToCalendarRepository.findByUserAndCalendar(newUser, calendar)
         if (accessType == "VIEWER") throw LimitedAccessRightsException("You do not have access rights to manage this calendars users")
-        else if (accessType == "ORGANIZER" && request.accessType != "VIEWER" && request.accessType != "DELETED") throw LimitedAccessRightsException("You do not have access rights to manage this calendars users")
-        else if (accessType == "MODERATOR" && (request.accessType == "MODERATOR" || request.accessType == "ADMINISTRATOR")) throw LimitedAccessRightsException("You do not have access rights to manage this calendars users")
+        else if (accessType == "ORGANIZER" && request.accessType != "VIEWER" && request.accessType != "DELETED") throw LimitedAccessRightsException("You do not have access rights to change users access type if it's higher then yours")
+        else if (accessType == "MODERATOR" && (request.accessType == "MODERATOR" || request.accessType == "ADMINISTRATOR")) throw LimitedAccessRightsException("You do not have access rights to change users access type if it's higher then yours")
         if (oldAccessType != null) {
-            if (accessType == "ORGANIZER" && oldAccessType.access_type != "VIEWER" && oldAccessType.access_type != "DELETED") throw LimitedAccessRightsException("You do not have access rights to manage this calendars users")
-            else if (accessType == "MODERATOR" && (oldAccessType.access_type == "MODERATOR" || oldAccessType.access_type == "ADMINISTRATOR")) throw LimitedAccessRightsException("You do not have access rights to manage this calendars users")
-            else if (accessType == "ADMINISTRATOR" && oldAccessType.access_type == accessType) TODO("Пока не знаю что делать, если админ пытается менять админа")
+            if (accessType == "ORGANIZER" && oldAccessType.access_type != "VIEWER" && oldAccessType.access_type != "DELETED") throw LimitedAccessRightsException("You do not have access rights to change access type of user with higher access the you")
+            else if (accessType == "MODERATOR" && (oldAccessType.access_type == "MODERATOR" || oldAccessType.access_type == "ADMINISTRATOR")) throw LimitedAccessRightsException("You do not have access rights to change access type of user with higher access the you")
+            else if (accessType == "ADMINISTRATOR" && oldAccessType.access_type == accessType) throw LimitedAccessRightsException("You do not have access rights to change access type of other administrator")
             userToCalendarRepository.save(UserToCalendarEntity(oldAccessType.id, newUser, calendar, request.accessType))
         }
         else {
