@@ -1,5 +1,6 @@
 package demo.calendar.entity
 
+import demo.calendar.dto.CalendarResponse
 import jakarta.persistence.*
 
 //в календаре у нас буквально 1 поле по которому мы можем искать, поэтому реализуем быстрый поиск по нему
@@ -24,4 +25,11 @@ data class CalendarEntity(
 
     @Column
     val description: String
-)
+) {
+    fun toCalendar() = CalendarResponse(
+        calendarName = calendar_name,
+        isPublic = is_public,
+        active = active,
+        teg = teg,
+        description = description)
+}
