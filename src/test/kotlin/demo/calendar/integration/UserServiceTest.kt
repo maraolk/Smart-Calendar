@@ -18,10 +18,8 @@ import demo.calendar.exception.*
 import demo.calendar.repository.TokenRepository
 import demo.calendar.service.UserService
 import io.kotest.assertions.throwables.shouldNotThrow
-import io.kotest.matchers.should
 import io.mockk.every
 import io.mockk.mockkStatic
-import org.junit.jupiter.api.Assertions.assertThrows
 import java.util.*
 
 @ActiveProfiles("test")
@@ -146,7 +144,7 @@ class UserServiceTest {
             email = "@BOMBOMBINIGUSINI",
             active = false
         ))
-        shouldThrow<UserIsDeactivated> {
+        shouldThrow<UserIsDeactivatedException> {
             userService.authorizeUser(newRequest)
         }
     }

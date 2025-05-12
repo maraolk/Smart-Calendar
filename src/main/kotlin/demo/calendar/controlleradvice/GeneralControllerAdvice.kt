@@ -14,15 +14,15 @@ class GeneralControllerAdvice {
     private val logger = LoggerFactory.getLogger(this::class.java)
 
     @ExceptionHandler(UserAlreadyRegisteredException::class)
-    fun alreadyRegisteredExceptionHandler(exception: UserAlreadyRegisteredException) : ResponseEntity<ErrorResponse> {
+    fun userAlreadyRegisteredExceptionHandler(exception: UserAlreadyRegisteredException) : ResponseEntity<ErrorResponse> {
         logger.warn("User with this tg is already registered", exception)
         return ResponseEntity.status(400).body(ErrorResponse(exception.message ?: "ALREADY REGISTERED"))
     }
 
     @ExceptionHandler(UserNotFoundException::class)
-    fun notFoundException(exception: UserNotFoundException) : ResponseEntity<ErrorResponse> {
+    fun userNotFoundException(exception: UserNotFoundException) : ResponseEntity<ErrorResponse> {
         logger.warn("User with this tg not found", exception)
-        return ResponseEntity.status(404).body(ErrorResponse(exception.message ?: "NOT FOUND"))
+        return ResponseEntity.status(404).body(ErrorResponse(exception.message ?: "USER NOT FOUND"))
     }
 
     @ExceptionHandler(WrongUserException::class)
@@ -39,8 +39,37 @@ class GeneralControllerAdvice {
 
     @ExceptionHandler(NotValidTokenException::class)
     fun notValidTokenException(exception: NotValidTokenException) : ResponseEntity<ErrorResponse> {
-        logger.warn("No user exists with such token", exception)
+        logger.warn("Not valid token", exception)
         return ResponseEntity.status(401).body(ErrorResponse(exception.message ?: "NOT VALID TOKEN"))
     }
 
+    @ExceptionHandler(InvalidTegException::class)
+    fun invalidTegException(exception: InvalidTegException) : ResponseEntity<ErrorResponse> {
+        logger.warn("Not valid teg", exception)
+        return ResponseEntity.status(400).body(ErrorResponse(exception.message ?: "NOT VALID TEG"))
+    }
+
+    @ExceptionHandler(LimitedAccessRightsException::class)
+    fun limitedAccessRightsException(exception: LimitedAccessRightsException) : ResponseEntity<ErrorResponse> {
+        logger.warn("The user does not have sufficient access rights to perform the desired action with the calendar", exception)
+        return ResponseEntity.status(400).body(ErrorResponse(exception.message ?: "LIMITED ACCESS RIGHTS"))
+    }
+
+    @ExceptionHandler(NotActiveCalendarException::class)
+    fun notActiveCalendarException(exception: NotActiveCalendarException) : ResponseEntity<ErrorResponse> {
+        logger.warn("The calendar is not active", exception)
+        return ResponseEntity.status(400).body(ErrorResponse(exception.message ?: "NOT ACTIVE CALENDAR"))
+    }
+
+    @ExceptionHandler(PrivateCalendarException::class)
+    fun privateCalendarException(exception: PrivateCalendarException) : ResponseEntity<ErrorResponse> {
+        logger.warn("The calendar is private, this user does not have access to it.", exception)
+        return ResponseEntity.status(400).body(ErrorResponse(exception.message ?: "PRIVATE CALENDAR"))
+    }
+
+    @ExceptionHandler(UserIsDeactivatedException::class)
+    fun userIsDeactivatedException(exception: UserIsDeactivatedException) : ResponseEntity<ErrorResponse> {
+        logger.warn("User with this tg is deactivated", exception)
+        return ResponseEntity.status(400).body(ErrorResponse(exception.message ?: "DEACTIVATED USER"))
+    }
 }
