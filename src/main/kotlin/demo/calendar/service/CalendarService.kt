@@ -34,7 +34,7 @@ class CalendarService(
         }
         val calendar = calendarRepository.save(CalendarEntity(
             calendar_name = request.calendarName,
-            is_public = request.isPublic,
+            is_public = request.public,
             description = request.description,
             teg = request.teg,
             active = true
@@ -43,7 +43,7 @@ class CalendarService(
         logger.info("Успешное создание календаря с такими данными calendarName: {}, teg: {} пользователем с тг {}", request.calendarName, request.teg, user.tg)
         return CalendarResponse(
             calendarName=request.calendarName,
-            isPublic=request.isPublic,
+            isPublic=request.public,
             teg=request.teg,
             active=true,
             description = request.description,

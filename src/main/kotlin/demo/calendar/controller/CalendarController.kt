@@ -21,6 +21,6 @@ class CalendarController(
     @PutMapping("/deleteCalendar")
     fun deleteCalendar(@RequestParam("token") token : String, @RequestBody request: DeleteCalendarRequest) = calendarService.deleteCalendar(token, request)
 
-    @GetMapping
+    @GetMapping("/getCalendars")
     fun getCalendars(@RequestParam("token") token : String, @RequestBody request: GetCalendarsRequest) = calendarService.getCalendars(token, request)
 }
