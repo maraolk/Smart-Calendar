@@ -32,15 +32,14 @@ class CalendarService(
             logger.warn("Ошибка создания календаря с тегом {}, такой календарь уже существует", request.teg)
             throw InvalidTegException("Calendar with such teg already exists")
         }
-        val calendar = CalendarEntity(
-                calendar_name = request.calendarName,
-                is_public = request.isPublic,
-                description = request.description,
-                teg = request.teg,
-                active = true
-            )
-        calendarRepository.save(calendar)
-        userToCalendarRepository.save(UserToCalendarEntity(user=user, calendar= calendarRepository.findByTeg(request.teg)!!, access_type = "ADMINISTRATOR"))
+        val calendar = calendarRepository.save(CalendarEntity(
+            calendar_name = request.calendarName,
+            is_public = request.isPublic,
+            description = request.description,
+            teg = request.teg,
+            active = true
+        ))
+        userToCalendarRepository.save(UserToCalendarEntity(user=user, calendar=calendar, access_type = "ADMINISTRATOR"))
         logger.info("Успешное создание календаря с такими данными calendarName: {}, teg: {} пользователем с тг {}", request.calendarName, request.teg, user.tg)
         return CalendarResponse(
             calendarName=request.calendarName,
