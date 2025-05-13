@@ -2,12 +2,13 @@ package demo.calendar.service
 
 import demo.calendar.dto.*
 import demo.calendar.entity.CalendarEntity
-import demo.calendar.entity.UserEntity
 import demo.calendar.entity.UserToCalendarEntity
 import demo.calendar.exception.*
 import demo.calendar.repository.*
 import jakarta.transaction.Transactional
 import org.slf4j.LoggerFactory
+import org.springframework.data.domain.PageRequest
+import org.springframework.data.domain.Sort
 import org.springframework.stereotype.Component
 
 @Component
@@ -144,5 +145,25 @@ class CalendarService(
             description = calendar.description,
             )
         calendarRepository.save(newCalendar)
+    }
+
+    fun getCalendars(token: String, request: GetCalendarsRequest): List<CalendarResponse> {
+        val tEntity = tokenRepository.findByToken(token)
+        userService.tokenIsValid(tEntity)
+        val user = tEntity!!.user
+        val sort = Sort.by(request.sortBy ?: "calendarName")
+        val pageable = PageRequest.of(request.page, request.size, sort)
+        when (request.type) {
+            "PUBLIC" -> return calendarRepository.findByIsPublic(true, pageable).content.map {it.toCalendar()}
+            "ALLOWED" -> {
+                val tmp = userToCalendarRepository.findByUser(user, pageable).content.filter { it.access_type != "DELETED" }
+                return tmp.map {it.calendar.toCalendar()}
+            }
+            "OWN" -> {
+                val tmp = userToCalendarRepository.findByUser(user, pageable).content.filter { it.access_type == "ADMINISTRATOR" }
+                return tmp.map {it.calendar.toCalendar()}
+            }
+            else -> throw BadRequestException("Bad request: unexpected type")
+        }
     }
 }
