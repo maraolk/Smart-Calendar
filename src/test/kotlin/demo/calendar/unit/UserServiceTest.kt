@@ -152,7 +152,7 @@ class UserServiceTest {
             password = newRequest.password,
             active = false
         )
-        val exception = assertThrows(UserIsDeactivated::class.java) {
+        val exception = assertThrows(UserIsDeactivatedException::class.java) {
             userService.authorizeUser(newRequest)
         }
         exception.message shouldBe "User with this tg is deactivated"

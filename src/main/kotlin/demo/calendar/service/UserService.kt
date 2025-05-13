@@ -76,7 +76,7 @@ class UserService(
         }
         if (!user.active) {
             logger.warn("Авторизация невозможна, пользователь с таким tg: {} деактивирован", request.tg)
-            throw UserIsDeactivated("User with this tg is deactivated")
+            throw UserIsDeactivatedException("User with this tg is deactivated")
         }
         if (user.username != request.userName){
             logger.warn("Авторизация невозможна, пользователь с таким tg: {} имеет другое имя пользователя", request.tg)
