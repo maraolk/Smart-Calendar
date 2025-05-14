@@ -2,7 +2,7 @@ package demo.calendar.dto
 
 data class ManageCalendarRequest(
     val calendarName: String,
-    val isPublic: Boolean,
+    val public: Boolean,
     val teg: String,
     val description: String,
     val active: Boolean

@@ -15,7 +15,7 @@ data class CalendarEntity(
     val calendar_name: String,
 
     @Column(nullable=false)
-    val is_public: Boolean = false,
+    val public: Boolean = false,
 
     @Column(nullable=false)
     val active: Boolean = true,
@@ -28,7 +28,7 @@ data class CalendarEntity(
 ) {
     fun toCalendar() = CalendarResponse(
         calendarName = calendar_name,
-        isPublic = is_public,
+        public = public,
         active = active,
         teg = teg,
         description = description)

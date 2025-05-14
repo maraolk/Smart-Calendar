@@ -34,7 +34,7 @@ class CalendarService(
         }
         val calendar = calendarRepository.save(CalendarEntity(
             calendar_name = request.calendarName,
-            is_public = request.public,
+            public = request.public,
             description = request.description,
             teg = request.teg,
             active = true
@@ -43,7 +43,7 @@ class CalendarService(
         logger.info("Успешное создание календаря с такими данными calendarName: {}, teg: {} пользователем с тг {}", request.calendarName, request.teg, user.tg)
         return CalendarResponse(
             calendarName=request.calendarName,
-            isPublic=request.public,
+            public=request.public,
             teg=request.teg,
             active=true,
             description = request.description,
@@ -67,7 +67,7 @@ class CalendarService(
         }
         val accessType = userToCalendarRepository.findByUserAndCalendar(user, calendar)?.access_type
         if (accessType == null || accessType == "DELETED"){
-            if(!calendar.is_public){
+            if(!calendar.public){
                 logger.warn("Ошибка обновления календаря с тегом {}, данный календарь приватный, у пользователя с тг {} нет к нему доступа", request.teg, user.tg)
                 throw PrivateCalendarException("This calendar is private, you can't interact with it.")
             }
@@ -81,14 +81,14 @@ class CalendarService(
         val newCalendar = CalendarEntity(
             id = calendar.id,
             calendar_name = request.calendarName,
-            is_public = request.isPublic,
+            public = request.public,
             active = request.active,
             teg = request.teg,
             description = request.description)
         calendarRepository.save(newCalendar)
         logger.info("Обновление календаря с тегом {} пользователем с тг {} прошло успешно", request.teg, user.tg)
         return CalendarResponse(calendarName = request.calendarName,
-            isPublic = request.isPublic,
+            public = request.public,
             active = request.active,
             teg = request.teg,
             description = request.description)
@@ -111,7 +111,7 @@ class CalendarService(
         }
         val accessType = userToCalendarRepository.findByUserAndCalendar(user, calendar)?.access_type
         if (accessType == null || accessType == "DELETED"){
-            if(!calendar.is_public){
+            if(!calendar.public){
                 logger.warn("Ошибка взаимодествия с календарем с тегом {}, данный календарь приватный, у пользователя с тг {} нет к нему доступа", request.teg, user.tg)
                 throw PrivateCalendarException("This calendar is private, you can't interact with it.")
             }
@@ -174,7 +174,7 @@ class CalendarService(
         }
         val accessType = userToCalendarRepository.findByUserAndCalendar(user, calendar)?.access_type
         if (accessType == null || accessType == "DELETED"){
-            if(!calendar.is_public){
+            if(!calendar.public){
                 logger.warn("Ошибка удаления календаря с тегом {}, данный календарь приватный, у пользователя с тг {} нет к нему доступа", request.teg, user.tg)
                 throw PrivateCalendarException("This calendar is private, you can't interact with it.")
             }
@@ -188,7 +188,7 @@ class CalendarService(
         val newCalendar = CalendarEntity(
             id=calendar.id,
             calendar_name = calendar.calendar_name,
-            is_public = calendar.is_public,
+            public = calendar.public,
             active=false,
             teg = calendar.teg,
             description = calendar.description,
@@ -197,14 +197,14 @@ class CalendarService(
         logger.info("Удаление календаря с тегом {} пользователем с тг {} прошло успешно", request.teg, user.tg)
     }
 
-    fun getCalendars(token: String, request: GetCalendarsRequest): List<CalendarResponse> {
+    fun getCalendars(token: String, page: Int, size: Int, sortBy: String?, type: String): List<CalendarResponse> {
         val tEntity = tokenRepository.findByToken(token)
         userService.tokenIsValid(tEntity)
         val user = tEntity!!.user
-        val sort = Sort.by(request.sortBy ?: "calendarName")
-        val pageable = PageRequest.of(request.page, request.size, sort)
-        when (request.type) {
-            "PUBLIC" -> return calendarRepository.findByIsPublic(true, pageable).content.map {it.toCalendar()}
+        val sort = Sort.by(sortBy ?: "id")
+        val pageable = PageRequest.of(page, size, sort)
+        when (type) {
+            "PUBLIC" -> return calendarRepository.findByPublic(true, pageable).content.map {it.toCalendar()}
             "ALLOWED" -> {
                 val tmp = userToCalendarRepository.findByUser(user, pageable).content.filter { it.access_type != "DELETED" }
                 return tmp.map {it.calendar.toCalendar()}
