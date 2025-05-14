@@ -4,5 +4,5 @@ data class GetCalendarsRequest(
     val page: Int,
     val size: Int,
     val sortBy: String?,
-    val type: String?  //PUBLIC, ALLOWED, OWN
+    val type: String  //PUBLIC, ALLOWED, OWN
 )
